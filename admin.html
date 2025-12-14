@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Customs Admin Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px auto;
+  }
+  th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+  th {
+    background-color: #1b1f3b;
+    color: #fff;
+  }
+  .approved { color: green; font-weight: bold; }
+  .rejected { color: red; font-weight: bold; }
+  button {
+    padding: 6px 12px;
+    margin: 2px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  button:hover { opacity: 0.8; }
+  button:nth-child(1) { background-color: #28a745; color: #fff; } /* Approve */
+  button:nth-child(2) { background-color: #dc3545; color: #fff; } /* Reject */
+  button:nth-child(3) { background-color: #ffc107; color: #000; } /* Delete */
+</style>
+</head>
+<body>
+
+<h1 style="text-align:center; margin:20px;">Nigeria Customs Service Admin Dashboard</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Full Name</th>
+            <th>Replacement No</th>
+            <th>NIN</th>
+            <th>State</th>
+            <th>LGA</th>
+            <th>Next of Kin</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Qualification</th>
+            <th>Marital Status</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="adminData">
+        <!-- Data will be loaded here -->
+    </tbody>
+</table>
+
+<script>
+// ===== LOAD ADMIN TABLE =====
+function loadAdminTable() {
+    let list = JSON.parse(localStorage.getItem("customs")) || [];
+    let tbody = document.getElementById("adminData");
+    tbody.innerHTML = "";
+
+    if(list.length === 0){
+        tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;">No applications submitted</td></tr>`;
+        return;
+    }
+
+    list.forEach((v, i) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${v.fullname}</td>
+                <td>${v.replacementNo}</td>
+                <td>${v.nin}</td>
+                <td>${v.state}</td>
+                <td>${v.lga}</td>
+                <td>${v.nextOfKin}</td>
+                <td>${v.email}</td>
+                <td>${v.address}</td>
+                <td>${v.qualification}</td>
+                <td>${v.maritalStatus}</td>
+                <td class="${v.status.toLowerCase()}">${v.status}</td>
+                <td>
+                    <button onclick="updateStatus(${i}, 'Approved')">Approve</button>
+                    <button onclick="updateStatus(${i}, 'Rejected')">Reject</button>
+                    <button onclick="deleteApplicant(${i})">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+// ===== UPDATE STATUS =====
+function updateStatus(index, status){
+    let list = JSON.parse(localStorage.getItem("customs")) || [];
+    list[index].status = status;
+    localStorage.setItem("customs", JSON.stringify(list));
+    loadAdminTable();
+}
+
+// ===== DELETE APPLICANT =====
+function deleteApplicant(index){
+    let list = JSON.parse(localStorage.getItem("customs")) || [];
+    list.splice(index, 1);
+    localStorage.setItem("customs", JSON.stringify(list));
+    loadAdminTable();
+}
+
+// ===== INIT =====
+document.addEventListener("DOMContentLoaded", loadAdminTable);
+</script>
+</body>
+</html>
